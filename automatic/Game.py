@@ -27,8 +27,10 @@ class Game:
 
     def data_load(self, file):
         data = torch.from_numpy(pickle.load(open(file, 'rb'))).to(self.model.device)
-
         nodes = self.model.num_nodes
+        err_msg = 'num of oscilattors %d does not match input singles in file (%s) ' % (nodes, file)
+        assert data.shape[0] == nodes, err_msg
+        
         self.target = torch.zeros((2 * nodes, len(data[0]))).type(torch.float64).to(self.model.device)
         self.target[0:nodes] = torch.cos(data)
         self.target[nodes:2 * nodes] = torch.sin(data)
@@ -41,16 +43,19 @@ class Game:
         # pre_training
         logging.info('Start {} rounds pre-training.'.format(pre_train_round))
         self.run_without_train(0, pre_train_round)
+        logging.info('')
         # training
         logging.info('Start {} rounds training.'.format(train_round))
         self.run_train(pre_train_round, pre_train_round + train_round)
+        logging.info('')
         # post_training
         logging.info('Start {} rounds post-training.'.format(post_train_round))
         self.run_without_train(pre_train_round + train_round, pre_train_round + train_round + post_train_round)
+        logging.info('')
 
     def run_without_train(self, start, stop):
         # use some smart method, t_step should adaptive (at least can be modified manually), or try tqdm.
-        t = time.perf_counter()
+        # t = time.perf_counter()
         bar = tqdm.tqdm(range(start, stop))
         for i in bar:
             self.prediction = self.model.forward(self.prediction)
@@ -58,10 +63,11 @@ class Game:
             self.store()
 
         logging.info('{}'.format(tqdm.tqdm.__str__(bar)))
+        time.sleep(0.1)
 
     def run_train(self, start, stop):
         # use some smart method, t_step should adaptive (at least can be modified manually), or try tqdm.
-        t = time.perf_counter()
+        # t = time.perf_counter()
         bar = tqdm.tqdm(range(start, stop))
         for i in bar:
             self.prediction = self.model.forward(self.prediction)
@@ -70,6 +76,7 @@ class Game:
             self.store()
 
         logging.info('{}'.format(tqdm.tqdm.__str__(bar)))
+        time.sleep(0.1)
 
     def store(self):
         self.store_dic['predict'][self.store_counter] = torch.arctan2(self.prediction[self.model.num_nodes:],

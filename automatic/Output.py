@@ -80,7 +80,7 @@ class Output:
             axes[i][0].legend(loc='upper left', fontsize=10)
 
         for i in range(n):
-            j = i + 6
+            j = i + self.num_nodes
             axes[i][1].scatter(x_input, sin_tar[start_plot: start_plot + window, i], label=labels[j][1], s=s, c=c)
             axes[i][1].scatter(x_input, sin_out[start_plot: start_plot + window, i], label=labels[j][0], s=s, c='blue')
             axes[i][1].legend(loc='upper left', fontsize=10)

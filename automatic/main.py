@@ -163,6 +163,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--input', default='../input/target.pkl', type=str, help='input pickle file path')
+    parser.add_argument('--std_output', default='../std_output/run_info.txt', type=str, help='output run information path')
     parser.add_argument('--origin', default='../input/origin.txt', type=str, help='load origin parameters')
     parser.add_argument('--dic', default='../test_case/', type=str, help='dictionary to store the output files')
     parser.add_argument('--device', default=None, type=str, help='device')
@@ -181,7 +182,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     # start job
-    f = open('../std_output/run_info.txt', 'a')
+    f = open(args.std_output, 'a')
     f.write('Start {}\n'.format(args.dic))
     create_output_folder(args.dic)
 
@@ -205,8 +206,8 @@ if __name__ == '__main__':
     finish = time.perf_counter()
 
     logging.info('All process finished. Runtime: {}s'.format(finish - start))
-    copyfile(args.dic+"predict.pkl", "../std_output/" + job_name + ".pkl")
-    copyfile(args.dic+"test.log", "../std_output/" + job_name + ".log")
+    # copyfile(args.dic+"predict.pkl", "../std_output/" + job_name + ".pkl")
+    # copyfile(args.dic+"test.log", "../std_output/" + job_name + ".log")
     f_job = open('../std_output/jobs.txt', 'a')
     f_job.write(job_name+'\n')
     f_job.close()
